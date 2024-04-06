@@ -21,7 +21,7 @@ const Header = () => {
           <Link href="/leaderboard">Leaderboard</Link>
         </li>
       </ul>
-      <div>
+      <div className="ml-auto">
         <ConnectButton showBalance={false} />
       </div>
     </header>

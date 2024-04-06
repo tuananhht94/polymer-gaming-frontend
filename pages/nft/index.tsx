@@ -170,9 +170,9 @@ function NFT() {
       <Header />
       <h2 className="my-12 text-center text-3xl font-bold">NFT</h2>
 
-      <div className="mx-auto flex max-w-5xl">
-        <div className="flex flex-1 items-center">
-          <h4 className="mb-4 text-3xl">
+      <div className="mx-auto flex max-w-5xl flex-col p-6 md:flex-row">
+        <div className="mb-4 flex flex-1 items-center justify-center md:mb-0">
+          <h4 className="text-center text-3xl">
             Purchase a Mystery NFT which could be any one of the Polymer Phase 2
             NFT Types
           </h4>
@@ -180,7 +180,7 @@ function NFT() {
         <div className="flex-1 bg-slate-200 py-48 text-center">[Image]</div>
       </div>
 
-      <ul className="mt-12 flex justify-center gap-x-8">
+      <ul className="mt-12 flex justify-center gap-x-8 p-6">
         <li>
           <button
             className={`border-b-4 py-1 font-bold text-black
@@ -201,7 +201,7 @@ function NFT() {
         </li>
       </ul>
 
-      <div className="mx-auto my-12 mb-24 max-w-5xl">
+      <div className="mx-auto my-12 mb-24 max-w-5xl p-6">
         <ul className={`nfts grid grid-cols-4 gap-4 visible-${section}`}>
           {nfts.map((nft) => (
             <li key={nft.name} className="nft-mint">

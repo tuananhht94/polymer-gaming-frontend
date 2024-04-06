@@ -66,7 +66,7 @@ function Points() {
       <Header />
       <h2 className="my-12 text-center text-3xl font-bold">Points</h2>
       <div className="mx-auto flex max-w-5xl flex-col items-center justify-center md:flex-row">
-        <div className="flex-1 p-4 text-center">
+        <div className="mb-6 flex-1 p-4 text-center">
           <h4 className="text-3xl">Polymer Points Faucet Wheel</h4>
           <p className="mt-4">
             Spin the wheel every 5 minutes to get Polymer Points, which can be

@@ -42,7 +42,7 @@ function Leaderboard() {
       <Header />
       <h2 className="my-12 text-center text-3xl font-bold">Leaderboard</h2>
 
-      <ul className="mx-auto my-12 flex w-full max-w-5xl flex-col space-y-px">
+      <ul className="mx-auto my-12 flex w-full max-w-5xl flex-col space-y-px px-8">
         <li className="w-full rounded bg-slate-800 py-2 text-white">
           <div className="flex">
             <span className="w-24 text-center">Rank</span>
