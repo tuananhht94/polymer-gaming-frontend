@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.nft-card {
+    aspect-ratio: 1 / 1.2;
+}
+
+.nfts li {
+    display: none;
+}
+
+.nfts.visible-purchase .nft-mint {
+    display: grid;
+}
+
+.nfts.visible-my-nfts .nft-own {
+    display: grid;
+}
+
+.spinwheel-1 {
+    transform: rotate(0deg);
+}
+
+.spinwheel-2 {
+    transform: rotate(-36deg);
+}
+
+.spinwheel-3 {
+    transform: rotate(-72deg);
+}
+
+.spinwheel-4 {
+    transform: rotate(-108deg);
+}
+
+.spinwheel-5 {
+    transform: rotate(-144deg);
+}
+
+.spinwheel-6 {
+    transform: rotate(-180deg);
+}
+
+.spinwheel-7 {
+    transform: rotate(-216deg);
+}
+
+.spinwheel-8 {
+    transform: rotate(-252deg);
+}
+
+.spinwheel-9 {
+    transform: rotate(-288deg);
+}
+
+.spinwheel-10 {
+    transform: rotate(-324deg);
+}
+
+.spinwheel-0 {
+    transform: rotate(18deg);
+}
+
+.spinwheel-spin {
+    animation: spin 1s linear infinite;
+}
