@@ -6,6 +6,7 @@ import { polymer } from '@/config/polymer'
 import xGamingAbi from '@/abis/XGamingUC.json'
 import { useReadContract } from 'wagmi'
 import { useEffect, useState } from 'react'
+import { optimismSepolia } from 'wagmi/chains'
 
 function Leaderboard() {
   const [leaderboard, setLeaderboard] = useState<
@@ -17,6 +18,7 @@ function Leaderboard() {
   >([])
   const { data } = useReadContract({
     abi: xGamingAbi,
+    chainId: optimismSepolia.id,
     address: `0x${polymer.optimism.portAddr}`,
     functionName: 'getTopPlayers',
     args: [100],
