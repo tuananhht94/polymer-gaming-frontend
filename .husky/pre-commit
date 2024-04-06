@@ -1,0 +1,3 @@
+next lint
+prettier --write .
+tsc --noEmit

@@ -1,9 +1,9 @@
-import Link from "next/link";
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import Link from 'next/link'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 
 const Header = () => {
   return (
-    <header className="flex justify-between items-center p-4">
+    <header className="flex items-center justify-between p-4">
       <h1 className="text-2xl font-bold tracking-tight">
         <Link href="/">Gaming dApp</Link>
       </h1>
@@ -22,10 +22,10 @@ const Header = () => {
         </li>
       </ul>
       <div>
-          <ConnectButton />
+        <ConnectButton />
       </div>
     </header>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header
