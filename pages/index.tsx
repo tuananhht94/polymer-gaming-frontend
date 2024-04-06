@@ -1,31 +1,63 @@
-import { ConnectButton } from '@rainbow-me/rainbowkit'
-import type { NextPage } from 'next'
-import Head from 'next/head'
+"use client";
 
-const Home: NextPage = () => {
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import Link from "next/link";
+
+function App() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <Head>
-        <title>Create Rainbowkit App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main className="">
-        <div className="flex flex-col items-center">
-          <h1 className="text-4xl font-bold text-center">
-            <span className="to-blue-500 bg-clip-text">
-              Get Started with Rainbow Kit 🌈🧰
-            </span>
-          </h1>
-          <h3 className="mt-2 text-gray-400">
-            Pre-installed NextJS (Typescript), TailwindCSS, Rainbowkit, Wagmi
-          </h3>
-          <div className="mt-4">
-            <ConnectButton />
+      <>
+        <Header />
+
+        <div className="flex justify-center items-center p-12 h-96 bg-slate-100">
+          <div className="flex-1 text-center">
+            <Link
+                href="/points"
+                className="bg-black text-white px-4 py-2 rounded-lg text-lg"
+            >
+              Spin Wheel
+            </Link>
+          </div>
+          <div className="flex-1">
+            <h4 className="text-3xl">
+              Earn PolyERC20 Tokens through Wheel Spinning
+            </h4>
           </div>
         </div>
-      </main>
-    </div>
-  )
+
+        <div className="flex justify-center items-center p-12 h-96">
+          <div className="flex-1">
+            <h4 className="text-3xl">Purchase NFTs with PolyERC20 Tokens</h4>
+          </div>
+          <div className="flex-1 text-center">
+            <Link
+                href="/nft"
+                className="bg-black text-white px-4 py-2 rounded-lg text-lg"
+            >
+              Try now
+            </Link>
+          </div>
+        </div>
+
+        <div className="flex justify-center items-center p-12 h-96 bg-slate-100">
+          <div className="flex-1 text-center">
+            <Link
+                href="/leaderboard"
+                className="bg-black text-white px-4 py-2 rounded-lg text-lg"
+            >
+              Check Leaderboard
+            </Link>
+          </div>
+          <div className="flex-1">
+            <h4 className="text-3xl">
+              Collect NFTs to earn Points and Climb the Leaderboard
+            </h4>
+          </div>
+        </div>
+
+        <Footer />
+      </>
+  );
 }
 
-export default Home
+export default App;

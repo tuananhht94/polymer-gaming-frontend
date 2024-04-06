@@ -4,7 +4,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import { useEthersSigner } from "@/ethers-signer";
 import abi from "@/abis/nft.json";
 import { useAccount } from "wagmi";
 
@@ -29,7 +28,6 @@ const refunds = [
 
 function NFT() {
   const account = useAccount();
-  const signer = useEthersSigner();
   // I have deployed a Dummy NFT Contract: 0x7Bd8afD53eDfedAa6417C635083DEf53c5a03825 on Optimism Sepolia
   // https://sepolia-optimism.etherscan.io/address/0x7Bd8afD53eDfedAa6417C635083DEf53c5a03825#code
 
@@ -70,16 +68,18 @@ function NFT() {
   const [myNfts, setMyNfts] = useState<any>([]);
 
   useEffect(() => {
-    if (signer) {
+    if (account.status === "connected") {
       fetchMyNfts();
     }
-  }, [signer]);
+  }, [account.status]);
 
   const fetchMyNfts = async () => {
     // As I have a helper function `getUserOwnedTokens(addr)` defined in the smart contract
     // So I can fetch the tokenIds of the NFTs owned by the user directly
 
     try {
+      const provider = new ethers.BrowserProvider(window.ethereum!);
+      const signer = await provider.getSigner();
       const contract = new ethers.Contract(
         "0x7Bd8afD53eDfedAa6417C635083DEf53c5a03825",
         abi,
@@ -109,6 +109,8 @@ function NFT() {
 
   const mint = async (variant: number) => {
     try {
+      const provider = new ethers.BrowserProvider(window.ethereum!);
+      const signer = await provider.getSigner();
       const contract = new ethers.Contract(
         "0x7Bd8afD53eDfedAa6417C635083DEf53c5a03825",
         abi,
@@ -138,6 +140,8 @@ function NFT() {
 
   const burn = async (tokenId: number) => {
     try {
+      const provider = new ethers.BrowserProvider(window.ethereum!);
+      const signer = await provider.getSigner();
       const contract = new ethers.Contract(
         "0x7Bd8afD53eDfedAa6417C635083DEf53c5a03825",
         abi,
