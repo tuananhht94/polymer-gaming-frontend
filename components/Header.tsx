@@ -4,7 +4,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 const Header = () => {
   return (
     <header className="flex flex-wrap items-center justify-between p-4">
-      <h1 className="text-2xl font-bold tracking-tight">
+      <h1 className="mr-6 text-2xl font-bold tracking-tight">
         <Link href="/">Gaming dApp</Link>
       </h1>
       <ul className="flex flex-wrap gap-x-16">
