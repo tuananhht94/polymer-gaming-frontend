@@ -4,8 +4,9 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
-import abi from '@/abis/points.json'
+import abi from '@/abis/XGamingUC.json'
 import { useAccount } from 'wagmi'
+import { polymer } from 'config/polymer'
 
 function Points() {
   const account = useAccount()
@@ -38,13 +39,13 @@ function Points() {
       const provider = new ethers.BrowserProvider(window.ethereum!)
       const signer = await provider.getSigner()
       const contract = new ethers.Contract(
-        '0xE97994805b7a090d7D1222c2bd4C8D7e0799ef93',
+        `0x${polymer.optimism.portAddr}`,
         abi,
         signer
       )
 
       // listen to the event emitted by the contract
-      contract.on('PointsAdded', (addr, randomNumber) => {
+      contract.on('FaucetToken', (addr, randomNumber) => {
         if (addr === signer?.address) {
           setPoints(Number(randomNumber))
           setIsRequesting(false)
@@ -52,8 +53,12 @@ function Points() {
       })
 
       setIsRequesting(true)
-      const tx = await contract.requestPoints()
-      await tx.wait()
+      const tx = await contract.faucetToken(
+        `0x${polymer.base.portAddr}`,
+        ethers.encodeBytes32String(polymer.optimism.channelId),
+        polymer.optimism.timeout
+      )
+      //  console.log(tx.hash)
     } catch (e) {
       console.error(e)
       setIsRequesting(false)
@@ -86,7 +91,7 @@ function Points() {
               }`}
             />
           </div>
-          {/* {points !== null && <p>Points Added: {points}</p>} */}
+          {points !== null && <p>Points Added: {points}</p>}
 
           {account.status === 'connected' ? (
             <button
