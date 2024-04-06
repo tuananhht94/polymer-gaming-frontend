@@ -2,10 +2,10 @@
 
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import { useState, useEffect } from 'react'
-import { ethers } from 'ethers'
 import { polymer } from '@/config/polymer'
 import xGamingAbi from '@/abis/XGamingUC.json'
+import { useReadContract } from 'wagmi'
+import { useEffect, useState } from 'react'
 
 function Leaderboard() {
   const [leaderboard, setLeaderboard] = useState<
@@ -15,26 +15,18 @@ function Leaderboard() {
       points: number
     }[]
   >([])
-
-  async function getLeaderboard() {
-    try {
-      const provider = new ethers.BrowserProvider(window.ethereum!)
-      const contract = new ethers.Contract(
-        polymer.optimism.portAddr,
-        xGamingAbi,
-        provider
-      )
-
-      return await contract.getTopPlayers(100)
-    } catch (e) {
-      console.error(e)
-    }
-  }
+  const { data } = useReadContract({
+    abi: xGamingAbi,
+    address: `0x${polymer.optimism.portAddr}`,
+    functionName: 'getTopPlayers',
+    args: [100],
+  })
 
   useEffect(() => {
-    getLeaderboard().then((r) => {
-      const addresses = r[0]
-      const points = r[1]
+    console.log(data)
+    if (Array.isArray(data) && data.length === 2) {
+      const addresses = data[0]
+      const points = data[1]
       setLeaderboard(
         addresses.map((address: string, index: number) => ({
           rank: index + 1,
@@ -42,8 +34,8 @@ function Leaderboard() {
           points: Number(points[index]),
         }))
       )
-    })
-  }, [])
+    }
+  }, [data])
 
   return (
     <>

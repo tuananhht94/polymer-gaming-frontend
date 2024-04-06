@@ -1,11 +1,11 @@
 export const polymer = {
   optimism: {
-    portAddr: '0x9070e98FE26CE56A36dd2226eD518c431F62D754',
+    portAddr: '9070e98FE26CE56A36dd2226eD518c431F62D754',
     channelId: 'channel-10',
     timeout: 36000,
   },
   base: {
-    portAddr: '0x471B982D1A59D7A41794C700980a753049756Be3',
+    portAddr: '471B982D1A59D7A41794C700980a753049756Be3',
     channelId: 'channel-11',
     timeout: 36000,
   },
