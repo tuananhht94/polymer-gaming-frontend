@@ -68,10 +68,10 @@ function NFT() {
   const [myNfts, setMyNfts] = useState<any>([]);
 
   useEffect(() => {
-    if (account.status === "connected") {
+    if (account.address) {
       fetchMyNfts();
     }
-  }, [account.status]);
+  }, [account.address]);
 
   const fetchMyNfts = async () => {
     // As I have a helper function `getUserOwnedTokens(addr)` defined in the smart contract
