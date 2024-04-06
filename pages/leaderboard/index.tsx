@@ -3,115 +3,46 @@
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { useState, useEffect } from 'react'
+import { ethers } from 'ethers'
+import { polymer } from '@/config/polymer'
+import xGamingAbi from '@/abis/XGamingUC.json'
 
 function Leaderboard() {
-  const [leaderboard, setLeaderboard] = useState([
+  const [leaderboard, setLeaderboard] = useState<
     {
-      rank: 1,
-      address: '0x1234567890123456789012345678901234567890',
-      points: 1000,
-    },
-    {
-      rank: 2,
-      address: '0x1234567890123456789012345678901234567890',
-      points: 900,
-    },
-    {
-      rank: 3,
-      address: '0x1234567890123456789012345678901234567890',
-      points: 800,
-    },
-    {
-      rank: 4,
-      address: '0x1234567890123456789012345678901234567890',
-      points: 700,
-    },
-    {
-      rank: 5,
-      address: '0x1234567890123456789012345678901234567890',
-      points: 600,
-    },
-    {
-      rank: 6,
-      address: '0x1234567890123456789012345678901234567890',
-      points: 500,
-    },
-    {
-      rank: 7,
-      address: '0x1234567890123456789012345678901234567890',
-      points: 400,
-    },
-    {
-      rank: 8,
-      address: '0x1234567890123456789012345678901234567890',
-      points: 300,
-    },
-    {
-      rank: 9,
-      address: '0x1234567890123456789012345678901234567890',
-      points: 200,
-    },
-    {
-      rank: 10,
-      address: '0x1234567890123456789012345678901234567890',
-      points: 100,
-    },
-    {
-      rank: 11,
-      address: '0x1234567890123456789012345678901234567890',
-      points: 90,
-    },
-    {
-      rank: 12,
-      address: '0x1234567890123456789012345678901234567890',
-      points: 80,
-    },
-    {
-      rank: 13,
-      address: '0x1234567890123456789012345678901234567890',
-      points: 70,
-    },
-    {
-      rank: 14,
-      address: '0x1234567890123456789012345678901234567890',
-      points: 60,
-    },
-    {
-      rank: 15,
-      address: '0x1234567890123456789012345678901234567890',
-      points: 50,
-    },
-    {
-      rank: 16,
-      address: '0x1234567890123456789012345678901234567890',
-      points: 40,
-    },
-    {
-      rank: 17,
-      address: '0x1234567890123456789012345678901234567890',
-      points: 30,
-    },
-    {
-      rank: 18,
-      address: '0x1234567890123456789012345678901234567890',
-      points: 20,
-    },
-    {
-      rank: 19,
-      address: '0x1234567890123456789012345678901234567890',
-      points: 10,
-    },
-    {
-      rank: 20,
-      address: '0x1234567890123456789012345678901234567890',
-      points: 1,
-    },
-  ])
+      rank: number
+      address: string
+      points: number
+    }[]
+  >([])
+
+  async function getLeaderboard() {
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum!)
+      const contract = new ethers.Contract(
+        polymer.optimism.portAddr,
+        xGamingAbi,
+        provider
+      )
+
+      return await contract.getTopPlayers(100)
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   useEffect(() => {
-    // TODO: Fetch leaderboard data from the smart contract
-    // and update the leaderboard state
-    // setLeaderboard([...]);
+    getLeaderboard().then((r) => {
+      const addresses = r[0]
+      const points = r[1]
+      setLeaderboard(
+        addresses.map((address: string, index: number) => ({
+          rank: index + 1,
+          address,
+          points: Number(points[index]),
+        }))
+      )
+    })
   }, [])
 
   return (
@@ -127,18 +58,19 @@ function Leaderboard() {
             <span className="w-32 text-center">Points</span>
           </div>
         </li>
-        {leaderboard.map((entry) => (
-          <li
-            key={entry.rank}
-            className="even:white w-full rounded py-2 odd:bg-slate-100"
-          >
-            <div className="flex">
-              <span className="w-24 text-center">{entry.rank}</span>
-              <span className="flex-1">{entry.address}</span>
-              <span className="w-32 text-center">{entry.points}</span>
-            </div>
-          </li>
-        ))}
+        {leaderboard.length > 0 &&
+          leaderboard.map((entry) => (
+            <li
+              key={entry.rank}
+              className="even:white w-full rounded py-2 odd:bg-slate-100"
+            >
+              <div className="flex">
+                <span className="w-24 text-center">{entry.rank}</span>
+                <span className="flex-1">{entry.address}</span>
+                <span className="w-32 text-center">{entry.points}</span>
+              </div>
+            </li>
+          ))}
       </ul>
 
       <Footer />
