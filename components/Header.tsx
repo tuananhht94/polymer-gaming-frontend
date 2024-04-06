@@ -3,11 +3,11 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 
 const Header = () => {
   return (
-    <header className="flex items-center justify-between p-4">
+    <header className="flex flex-wrap items-center justify-between p-4">
       <h1 className="text-2xl font-bold tracking-tight">
         <Link href="/">Gaming dApp</Link>
       </h1>
-      <ul className="flex gap-x-16">
+      <ul className="flex flex-wrap gap-x-16">
         <li>
           <Link href="/">Home</Link>
         </li>
@@ -22,7 +22,7 @@ const Header = () => {
         </li>
       </ul>
       <div>
-        <ConnectButton />
+        <ConnectButton showBalance={false} />
       </div>
     </header>
   )
