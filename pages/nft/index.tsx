@@ -262,21 +262,24 @@ function NFT() {
       const provider = new ethers.BrowserProvider(window.ethereum!)
       const signer = await provider.getSigner()
       const contract = new ethers.Contract(
-        '0x7Bd8afD53eDfedAa6417C635083DEf53c5a03825',
-        xGamingUCAbi,
+        polymer.base.portAddr,
+        baseNftAbi,
         signer
       )
 
       if (signer) {
         setLoadingForBurningTokenId((prev) => [...prev, tokenId])
-
-        // burn(tokenId) is the available function in the smart contract
-        const tx = await contract.burn(tokenId)
-
+        const tx = await contract.burn(
+          polymer.optimism.portAddr,
+          ethers.encodeBytes32String(polymer.base.channelId),
+          polymer.base.timeout,
+          tokenId)
         await tx.wait()
+        showToastSuccess(`Burned NFT Tx ${tx.hash}`)
         fetchMyNfts()
       }
-    } catch (e) {
+    } catch (e: Error | any) {
+      showToastFailed(e.message || 'Failed to burn NFT')
       console.error(e)
     } finally {
       // reset loading state
