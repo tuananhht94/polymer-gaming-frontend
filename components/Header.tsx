@@ -23,7 +23,7 @@ const Header = () => {
   const { data: pointsData } = useReadContract({
     abi: xGamingAbi,
     chainId: optimismSepolia.id,
-    address: `0x${polymer.optimism.portAddr}`,
+    address: polymer.optimism.portAddr,
     functionName: 'players',
     args: [account?.address!],
   })

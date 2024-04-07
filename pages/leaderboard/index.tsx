@@ -19,7 +19,7 @@ function Leaderboard() {
   const { data } = useReadContract({
     abi: xGamingAbi,
     chainId: optimismSepolia.id,
-    address: `0x${polymer.optimism.portAddr}`,
+    address: polymer.optimism.portAddr,
     functionName: 'getTopPlayers',
     args: [100],
   })

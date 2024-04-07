@@ -39,7 +39,7 @@ function Points() {
       const provider = new ethers.BrowserProvider(window.ethereum!)
       const signer = await provider.getSigner()
       const contract = new ethers.Contract(
-        `0x${polymer.optimism.portAddr}`,
+        polymer.optimism.portAddr,
         abi,
         signer
       )
@@ -54,7 +54,7 @@ function Points() {
 
       setIsRequesting(true)
       const tx = await contract.faucetToken(
-        `0x${polymer.base.portAddr}`,
+        polymer.base.portAddr,
         ethers.encodeBytes32String(polymer.optimism.channelId),
         polymer.optimism.timeout
       )
