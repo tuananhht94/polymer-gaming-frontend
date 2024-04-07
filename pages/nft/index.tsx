@@ -273,7 +273,8 @@ function NFT() {
           polymer.optimism.portAddr,
           ethers.encodeBytes32String(polymer.base.channelId),
           polymer.base.timeout,
-          tokenId)
+          tokenId
+        )
         await tx.wait()
         showToastSuccess(`Burned NFT Tx ${tx.hash}`)
         fetchMyNfts()
