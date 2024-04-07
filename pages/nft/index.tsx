@@ -105,7 +105,7 @@ function NFT() {
       {
         name: 'NFT 1',
         tokenUri: tokenURIs[0],
-        price: 20,
+        price: 25,
         points: 10,
         variant: 1,
       },
