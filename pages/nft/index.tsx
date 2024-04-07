@@ -7,10 +7,14 @@ import { ethers } from 'ethers'
 import xGamingUCAbi from '@/abis/XGamingUC.json'
 import baseNftAbi from '@/abis/PolyERC721UC.json'
 import polyERC20Abi from '@/abis/PolyERC20.json'
+import polyERC721UC from '@/abis/PolyERC721UC.json'
 import { useAccount, useSwitchChain } from 'wagmi'
 import { polymer, polymerErc20Address } from '@/config/polymer'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { readContract } from '@wagmi/core'
+import { getDefaultConfig } from '@rainbow-me/rainbowkit'
+import { baseSepolia, optimismSepolia } from 'wagmi/chains'
 const refunds = [
   {
     variant: 1,
@@ -154,13 +158,17 @@ function NFT() {
         //  const nftType1Ids = await contract.ownerTokenMap(signer.address, 0)
         // console.log('NFT Type 1:', tokenIds)
         // // map tokenIds to variant
+        const tokenURIs = await Promise.all([
+          await nftContract.tokenURIs(0),
+          await nftContract.tokenURIs(1),
+          await nftContract.tokenURIs(2),
+          await nftContract.tokenURIs(3),
+        ])
         const nfts = tokenIds.map(async (tokenId) => {
-          // const name = await nftContract.name(tokenId)
-          // const tokeUri = await nftContract.tokenURI(tokenId)
-          console.log('NFT:', tokenId)
+          const tokenType = await nftContract.tokenTypeMap(tokenId)
           return {
             name: 'NFT',
-            tokenUri: 'tokeUri',
+            tokenUri: tokenURIs[tokenType],
             tokenId: tokenId,
           } as MyNft
         })
@@ -396,7 +404,11 @@ function NFT() {
           {myNfts.map((nft: MyNft, index: number) => (
             <li key={index} className="nft-own">
               <div className="nft-card flex w-full items-center justify-center rounded bg-slate-800 text-3xl text-white">
-                {nft.name}
+                <img
+                  className="h-full w-full object-cover object-center"
+                  src={nft.tokenUri}
+                  alt="image description"
+                />
               </div>
               <div className="mt-2 flex">
                 <div className="flex-1">
