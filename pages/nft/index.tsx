@@ -7,7 +7,7 @@ import { ethers } from 'ethers'
 import xGamingUCAbi from '@/abis/XGamingUC.json'
 import baseNftAbi from '@/abis/PolyERC721UC.json'
 import polyERC20Abi from '@/abis/PolyERC20.json'
-import { useAccount } from 'wagmi'
+import { useAccount, useSwitchChain } from 'wagmi'
 import { polymer, polymerErc20Address } from '@/config/polymer'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -44,6 +44,7 @@ export interface MyNft {
 
 function NFT() {
   const account = useAccount()
+  const switchChain = useSwitchChain()
   // I have deployed a Dummy NFT Contract: 0x7Bd8afD53eDfedAa6417C635083DEf53c5a03825 on Optimism Sepolia
   // https://sepolia-optimism.etherscan.io/address/0x7Bd8afD53eDfedAa6417C635083DEf53c5a03825#code
 
@@ -262,17 +263,17 @@ function NFT() {
       const provider = new ethers.BrowserProvider(window.ethereum!)
       const signer = await provider.getSigner()
       const contract = new ethers.Contract(
-        polymer.base.portAddr,
-        baseNftAbi,
+        polymer.optimism.portAddr,
+        xGamingUCAbi,
         signer
       )
 
       if (signer) {
         setLoadingForBurningTokenId((prev) => [...prev, tokenId])
         const tx = await contract.burn(
-          polymer.optimism.portAddr,
-          ethers.encodeBytes32String(polymer.base.channelId),
-          polymer.base.timeout,
+          polymer.base.portAddr,
+          ethers.encodeBytes32String(polymer.optimism.channelId),
+          polymer.optimism.timeout,
           tokenId
         )
         await tx.wait()
