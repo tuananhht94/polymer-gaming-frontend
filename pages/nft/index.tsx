@@ -4,12 +4,13 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
-import abi from '@/abis/XGamingUC.json'
+import xGamingUCAbi from '@/abis/XGamingUC.json'
 import baseNftAbi from '@/abis/PolyERC721UC.json'
 import polyERC20Abi from '@/abis/PolyERC20.json'
 import { useAccount } from 'wagmi'
 import { polymer, polymerErc20Address } from '@/config/polymer'
-
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 const refunds = [
   {
     variant: 1,
@@ -35,6 +36,11 @@ export interface Nft {
   points: number
   variant: number
 }
+export interface MyNft {
+  name: string
+  tokenUri: string
+  tokenId: number
+}
 
 function NFT() {
   const account = useAccount()
@@ -51,10 +57,10 @@ function NFT() {
   const [loadingForBurningTokenId, setLoadingForBurningTokenId] = useState<
     number[]
   >([])
-
+  const [loadingForByRandomNFT, setLoadingForByRandomNFT] =
+    useState<boolean>(false)
   const [nfts, setNfts] = useState<Nft[]>([])
-
-  const [myNfts, setMyNfts] = useState<any>([])
+  const [myNfts, setMyNfts] = useState<MyNft[]>([])
 
   useEffect(() => {
     if (account.address) {
@@ -63,17 +69,25 @@ function NFT() {
     }
   }, [account.address])
 
+  const showToastSuccess = (message: string) =>
+    toast.success(message, {
+      position: 'top-right',
+    })
+  const showToastFailed = (message: string) =>
+    toast.error(message, {
+      position: 'top-right',
+    })
+  const nftContract = new ethers.Contract(
+    polymer.base.portAddr,
+    baseNftAbi,
+    new ethers.JsonRpcProvider('https://rpc.notadegen.com/base/sepolia')
+  )
   const fetchNfts = async () => {
-    const nftContract = new ethers.Contract(
-      polymer.base.portAddr,
-      baseNftAbi,
-      new ethers.JsonRpcProvider('https://rpc.notadegen.com/base/sepolia')
-    )
-    const gamingContract = new ethers.Contract(
-      polymer.optimism.portAddr,
-      abi,
-      new ethers.JsonRpcProvider('https://sepolia.optimism.io')
-    )
+    // const gamingContract = new ethers.Contract(
+    //   polymer.optimism.portAddr,
+    //   xGamingUCAbi,
+    //   new ethers.JsonRpcProvider('https://sepolia.optimism.io')
+    // )
     const tokenURIs = await Promise.all([
       await nftContract.tokenURIs(0),
       await nftContract.tokenURIs(1),
@@ -123,23 +137,33 @@ function NFT() {
       const signer = await provider.getSigner()
       const contract = new ethers.Contract(
         polymer.optimism.portAddr,
-        abi,
+        xGamingUCAbi,
         signer
       )
 
       if (signer) {
-        const tokenIds = await contract.getUserOwnedTokens(signer.getAddress())
-
-        // fetch variant of each token
-        const variants = await Promise.all(
-          tokenIds.map((id: number) => contract.tokenVariants(id))
-        )
-
-        // map tokenIds to variant
-        const nfts = tokenIds.map((id: number, index: number) => ({
-          tokenId: Number(id),
-          variant: Number(variants[index]),
-        }))
+        const tokenIds = (
+          await Promise.all([
+            await contract.ownerTokenMap(signer.address, 0),
+            await contract.ownerTokenMap(signer.address, 1),
+            await contract.ownerTokenMap(signer.address, 2),
+            await contract.ownerTokenMap(signer.address, 3),
+          ])
+        ).flatMap((item) => item)
+        //  const nftType1Ids = await contract.ownerTokenMap(signer.address, 0)
+        // console.log('NFT Type 1:', tokenIds)
+        // // map tokenIds to variant
+        const nfts = tokenIds.map(async (tokenId) => {
+          // const name = await nftContract.name(tokenId)
+          // const tokeUri = await nftContract.tokenURI(tokenId)
+          console.log('NFT:', tokenId)
+          return {
+            name: 'NFT',
+            tokenUri: 'tokeUri',
+            tokenId: tokenId,
+          } as MyNft
+        })
+        setMyNfts(await Promise.all(nfts))
       }
     } catch (e) {
       console.error(e)
@@ -152,7 +176,7 @@ function NFT() {
       const signer = await provider.getSigner()
       const contract = new ethers.Contract(
         polymer.optimism.portAddr,
-        abi,
+        xGamingUCAbi,
         signer
       )
       const polyERC20Contract = new ethers.Contract(
@@ -170,17 +194,19 @@ function NFT() {
           ethers.parseEther(`${nfts[variant - 1].price}`)
         )
         console.log(`Approve Buy Tx ${txApprove.hash}`)
-        // mintNFT1, mintNFT2, mintNFT3, mintNFT4 are the available functions in the smart contract
+        await txApprove.wait()
         const tx = await contract.buyNFT(
           polymer.base.portAddr,
           ethers.encodeBytes32String(polymer.optimism.channelId),
           polymer.optimism.timeout,
           variant - 1
         )
+        await tx.wait()
         console.log(`Bought Tx ${tx.hash}`)
-        //fetchMyNfts()
+        showToastSuccess(`Bought NFT Tx ${tx.hash}`)
       }
-    } catch (e) {
+    } catch (e: Error | any) {
+      showToastFailed(e?.message || 'Failed to mint NFT')
       console.error(e)
     } finally {
       // reset loading state
@@ -195,7 +221,7 @@ function NFT() {
       const signer = await provider.getSigner()
       const xGamingContract = new ethers.Contract(
         polymer.optimism.portAddr,
-        abi,
+        xGamingUCAbi,
         signer
       )
       const polyERC20Contract = new ethers.Contract(
@@ -203,23 +229,33 @@ function NFT() {
         polyERC20Abi,
         signer
       )
-      console.log('Randomize', await xGamingContract.randomPriceBuyNFTAmount())
-      const randomByAmount = await xGamingContract.randomPriceBuyNFTAmount()
-      const txApprove = await polyERC20Contract.approve(
-        polymer.optimism.portAddr,
-        ethers.parseEther(randomByAmount.toString())
-      )
-      console.log(`Approve Buy Tx ${txApprove.hash}`)
-      const tx = await xGamingContract.buyRandomNFT(
-        polymer.base.portAddr,
-        ethers.encodeBytes32String(polymer.optimism.channelId),
-        polymer.optimism.timeout
-      )
-      console.log(`Bought Random Tx ${tx.hash}`)
-    } catch (error) {
+      if (signer) {
+        setLoadingForByRandomNFT(true)
+        console.log(
+          'Randomize',
+          await xGamingContract.randomPriceBuyNFTAmount()
+        )
+        const randomByAmount = await xGamingContract.randomPriceBuyNFTAmount()
+        const txApprove = await polyERC20Contract.approve(
+          polymer.optimism.portAddr,
+          ethers.parseEther(randomByAmount.toString())
+        )
+        console.log(`Approve Buy Tx ${txApprove.hash}`)
+        await txApprove.wait()
+        const tx = await xGamingContract.buyRandomNFT(
+          polymer.base.portAddr,
+          ethers.encodeBytes32String(polymer.optimism.channelId),
+          polymer.optimism.timeout
+        )
+        await tx.wait()
+        setLoadingForByRandomNFT(false)
+        showToastSuccess(`Bought Random Tx ${tx.hash}`)
+      }
+    } catch (error: Error | any) {
+      setLoadingForByRandomNFT(false)
+      showToastFailed(error?.message || 'Failed to mint Random NFT')
       console.log(error)
     }
-
   }
   const burn = async (tokenId: number) => {
     try {
@@ -227,7 +263,7 @@ function NFT() {
       const signer = await provider.getSigner()
       const contract = new ethers.Contract(
         '0x7Bd8afD53eDfedAa6417C635083DEf53c5a03825',
-        abi,
+        xGamingUCAbi,
         signer
       )
 
@@ -262,6 +298,7 @@ function NFT() {
 
   return (
     <>
+      <ToastContainer />
       <Header />
       <h2 className="my-12 text-center text-3xl font-bold">NFT</h2>
 
@@ -351,18 +388,18 @@ function NFT() {
               </div>
             </li>
           ))}
-          {myNfts.map((nft: any, index: number) => (
+          {myNfts.map((nft: MyNft, index: number) => (
             <li key={index} className="nft-own">
               <div className="nft-card flex w-full items-center justify-center rounded bg-slate-800 text-3xl text-white">
-                NFT {nft.variant}
+                {nft.name}
               </div>
               <div className="mt-2 flex">
                 <div className="flex-1">
-                  <h5>NFT #{nft.tokenId}</h5>
-                  <p className="text-sm">
+                  <h5>NFT #{Number(nft.tokenId)}</h5>
+                  {/* <p className="text-sm">
                     Get {refunds.find((r) => r.variant === nft.variant)?.points}{' '}
                     points points
-                  </p>
+                  </p> */}
                 </div>
                 <div>
                   <button
@@ -411,10 +448,33 @@ function NFT() {
           <button
             className="rounded-lg bg-black px-4 py-2 text-center text-white transition hover:scale-105 disabled:cursor-not-allowed disabled:bg-gray-400"
             type="button"
-            disabled={account.status !== 'connected'}
+            disabled={loadingForByRandomNFT || account.status !== 'connected'}
             onClick={() => minRandom()}
           >
-            Randomize
+            {loadingForByRandomNFT ? (
+              <svg
+                className="h-5 w-5 animate-spin text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+            ) : (
+              'Randomize'
+            )}
           </button>
         </div>
       </div>
