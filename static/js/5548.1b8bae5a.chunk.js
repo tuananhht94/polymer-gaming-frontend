@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkpolymer_gift=self.webpackChunkpolymer_gift||[]).push([[5548],{5548:(e,f,l)=>{l.r(f),l.d(f,{default:()=>p.n});var p=l(4441)}}]);
